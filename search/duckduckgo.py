@@ -12,7 +12,7 @@ class DuckDuckGoSearch(BaseSearch):
         }
 
     async def search(self, query: str) -> List[str]:
-        params = {"text": query}
+        params = {"q": query}
         async with httpx.AsyncClient(timeout=self.timeout, headers=self.headers) as client:
             response = await client.get(self.url, params=params)  
             response.raise_for_status()
