@@ -1,4 +1,4 @@
-from urllib.parse import urljoin
+from urllib.parse import urljoin, parse_qs
 import httpx
 from bs4 import BeautifulSoup
 from typing import List
@@ -24,8 +24,12 @@ class DuckDuckGoSearch(BaseSearch):
             for a in soup.find_all("a", class_="result__a"):
                 link = a.get("href")
                 if link:
-                    full_url = urljoin(self.url, link)
-                    links.append(full_url)
+                    if "duckduckgo.com/l" in link:
+                        parsed_url = parse_qs(urljoin(self.url, link))
+                        real_url = parsed_url.get("uddg",[link])[0]
+                        links.append(real_url)
+                    else:
+                        links.append(urljoin(self.url, link))    
 
             return links        
 
