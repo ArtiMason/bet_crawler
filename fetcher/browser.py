@@ -1,6 +1,5 @@
 from playwright.async_api import async_playwright
 from typing import Optional
-import asyncio
 
 class BrowserHandler:
     def __init__(self, timeout: int = 30000):
@@ -31,6 +30,19 @@ class BrowserHandler:
             return None
         finally:
             await page.close()
+
+    async def get_content(self, url: str) -> Optional[str]:
+        if not self.context:
+            await self.start()
+        page: Page = await self.context.new_page()
+        try: 
+            await  page.goto(url, timeout=self.timeout, wait_until="domcontentloaded")
+            return await page.content() 
+        except Exception as e:
+            print(f"Playwright Content Error: {e}") 
+        finally:
+            await page.close()    
+
 
     async def stop(self):
         if self.browser:
